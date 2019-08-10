@@ -47,7 +47,7 @@ async def list(ctx: commands.Context):
         await ctx.send("No radios added!")
         return
 
-    text = "Radios available:\n```"
+    text = "Radios available:\n```\n"
     for radio in radios:
         text += "{}\n".format(radio.radio_name)
     text += "```"
