@@ -6,7 +6,7 @@ from argparse import ArgumentParser
 
 bot = commands.Bot(command_prefix="r!")
 
-@bot.command()
+@bot.command(aliases=["p"])
 async def play(ctx: commands.Context, radio_name: str):
     from sqlalchemy.orm.exc import NoResultFound
     import sys
@@ -21,14 +21,14 @@ async def play(ctx: commands.Context, radio_name: str):
     except NoResultFound:
         await ctx.send("No radio named '{}' was found!".format(radio_name))
 
-@bot.command()
+@bot.command(aliases=["a"])
 async def add(ctx: commands.Context, radio_name: str, radio_url: str):
     radio = Radio(ctx.guild.id, radio_name, radio_url)
     DBSession.add(radio)
     DBSession.commit()
     await ctx.send("👍")
 
-@bot.command()
+@bot.command(aliases=["s"])
 async def stop(ctx: commands.Context):
     if ctx.voice_client is not None:
         if ctx.voice_client.is_playing():
@@ -38,7 +38,7 @@ async def stop(ctx: commands.Context):
 
     await ctx.send("👍")
 
-@bot.command()
+@bot.command(aliases=["l"])
 async def list(ctx: commands.Context):
     query = DBSession.query(Radio)
     radios = query.filter(Radio.guild_id == ctx.guild.id).all()
