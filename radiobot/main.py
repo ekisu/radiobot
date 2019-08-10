@@ -30,12 +30,13 @@ async def add(ctx: commands.Context, radio_name: str, radio_url: str):
 
 @bot.command()
 async def stop(ctx: commands.Context):
-    if ctx.voice_client is None:
-        return
-    
-    if ctx.voice_client.is_playing():
-        ctx.voice_client.stop()
-        await ctx.send("👍")
+    if ctx.voice_client is not None:
+        if ctx.voice_client.is_playing():
+            ctx.voice_client.stop()
+        
+        await ctx.voice_client.disconnect()
+
+    await ctx.send("👍")
 
 @bot.command()
 async def list(ctx: commands.Context):
