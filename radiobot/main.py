@@ -65,6 +65,9 @@ async def ensure_voice(ctx):
             raise commands.CommandError("Author not connected to a voice channel.")
     elif ctx.voice_client.is_playing():
         await ctx.voice_client.stop()
+    
+    if ctx.voice_client.channel != ctx.author.voice.channel:
+        await ctx.voice_client.move_to(ctx.author.voice.channel)
 
 @bot.event
 async def on_ready():
