@@ -16,9 +16,7 @@ async def play(ctx: commands.Context, radio_name: str):
         radio = query.filter(Radio.guild_id == ctx.guild.id) \
             .filter(Radio.radio_name == radio_name) \
             .one()
-        print("JESUS AMADO")
-        print(repr(radio.radio_url))
-        
+
         ctx.voice_client.play(discord.FFmpegPCMAudio(str(radio.radio_url), stderr=sys.stdout))
     except NoResultFound:
         await ctx.send("No radio named '{}' was found!".format(radio_name))
