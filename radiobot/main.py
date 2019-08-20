@@ -56,7 +56,7 @@ async def list(ctx: commands.Context):
 
 @play.before_invoke
 async def ensure_voice(ctx):
-    if ctx.voice_client is None:
+    if ctx.voice_client is None or not ctx.voice_client.is_connected():
         if ctx.author.voice:
             await ctx.author.voice.channel.connect()
         else:
