@@ -72,6 +72,21 @@ async def ensure_voice(ctx):
 async def on_ready():
     print('Logged in as:\n{0} (ID: {0.id})'.format(bot.user))
 
+@bot.listen("on_voice_state_update")
+async def check_for_voice_inactivity(
+    member: discord.Member,
+    before: discord.VoiceState,
+    after: discord.VoiceState):
+    voice_client = member.guild.voice_client
+    if voice_client is None or not voice_client.is_connected():
+        # We're not connected to this server, just ignore.
+        return
+    
+    channel_members = voice_client.channel.members
+    if all(member.bot for member in channel_members):
+        # If all the members in the voice chat are bots, disconnect.
+        await voice_client.disconnect()        
+
 def setup_database():
     from sqlalchemy import create_engine
 
