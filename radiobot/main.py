@@ -3,19 +3,22 @@ from discord.ext import commands
 from .db import initialize_sql, DBSession
 from .db.radios import Radio
 from argparse import ArgumentParser
+from sqlalchemy.orm.exc import NoResultFound
 
 bot = commands.Bot(command_prefix="r!")
 
+def find_radio(guild_id: int, radio_name: str):
+    query = DBSession.query(Radio)
+    return query.filter(Radio.guild_id == guild_id) \
+        .filter(Radio.radio_name == radio_name) \
+        .one()
+
 @bot.command(aliases=["p"])
 async def play(ctx: commands.Context, radio_name: str):
-    from sqlalchemy.orm.exc import NoResultFound
     import sys
-
-    query = DBSession.query(Radio)
+    
     try:
-        radio = query.filter(Radio.guild_id == ctx.guild.id) \
-            .filter(Radio.radio_name == radio_name) \
-            .one()
+        radio = find_radio(ctx.guild.id, radio_name)
 
         ctx.voice_client.play(discord.FFmpegPCMAudio(str(radio.radio_url), stderr=sys.stdout))
     except NoResultFound:
@@ -30,6 +33,16 @@ async def add(ctx: commands.Context, radio_name: str, radio_url: str):
         await ctx.send("👍")
     except Exception as e:
         await ctx.send("An error occured while adding the radio.")
+
+@bot.command(aliases=["d"])
+async def delete(ctx: commands.Context, radio_name: str):
+    try:
+        radio = find_radio(ctx.guild.id, radio_name)
+        DBSession.delete(radio)
+        DBSession.commit()
+        await ctx.send("👍")
+    except Exception as e:
+        await ctx.send("An error occured while removing the radio.")
 
 @bot.command(aliases=["s"])
 async def stop(ctx: commands.Context):
