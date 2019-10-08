@@ -23,10 +23,13 @@ async def play(ctx: commands.Context, radio_name: str):
 
 @bot.command(aliases=["a"])
 async def add(ctx: commands.Context, radio_name: str, radio_url: str):
-    radio = Radio(ctx.guild.id, radio_name, radio_url)
-    DBSession.add(radio)
-    DBSession.commit()
-    await ctx.send("👍")
+    try:
+        radio = Radio(ctx.guild.id, radio_name, radio_url)
+        DBSession.add(radio)
+        DBSession.commit()
+        await ctx.send("👍")
+    except Exception as e:
+        await ctx.send("An error occured while adding the radio.")
 
 @bot.command(aliases=["s"])
 async def stop(ctx: commands.Context):
